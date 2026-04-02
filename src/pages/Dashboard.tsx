@@ -133,8 +133,13 @@ const Dashboard = () => {
       <div className={`flex-1 flex flex-col relative ${!activeRoomId ? 'hidden md:flex' : 'flex'}`}>
         {activeRoom ? (
           <>
-            {/* WhatsApp Doodle Pattern Layer */}
-            <div className="absolute inset-0 chat-bg-pattern pointer-events-none z-0" />
+            {/* Background Layering: Doodle -> Logo -> Messages */}
+            <div className="absolute inset-0 chat-bg-pattern pointer-events-none z-0 opacity-[0.3] contrast-[1.4] brightness-[0.7]" />
+            
+            {/* Centered Logo Watermark */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[5]">
+               <img src="/cryptochat.png" alt="" className="w-1/2 max-w-lg grayscale brightness-200 opacity-[0.05]" />
+            </div>
             
             {/* Chat header */}
             <div className="h-16 px-4 flex items-center justify-between bg-card border-b border-border/50 relative z-10">
@@ -188,7 +193,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="flex-1 relative z-10 flex flex-col bg-[#0B141A]/95">
+            <div className="flex-1 relative z-10 flex flex-col">
               <ChatMessages messages={activeMessages} />
               <TypingIndicator users={activeTyping} />
               <ChatInput onSend={text => sendMessage(activeRoom.roomId, text)} />

@@ -58,8 +58,10 @@
   .chat-bg-pattern {
     background-image: url('/whatsapp_doodle_bg.png');
     background-repeat: repeat;
-    background-size: 50% 50%;
-    opacity: 0.06;
+    background-size: 350px 350px;
+    opacity: 0.15;
+    filter: contrast(1.4) brightness(0.8);
+    mix-blend-mode: overlay;
   }
 }
 
