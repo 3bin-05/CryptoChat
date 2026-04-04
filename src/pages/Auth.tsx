@@ -66,11 +66,11 @@ const Auth = () => {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', delay: 0.2 }}
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 mb-4"
+            className="inline-flex items-center justify-center w-16 h-16 mb-4"
           >
-            <Shield className="w-8 h-8 text-primary" />
+            <img src="/cryptochatlogo.png" alt="CryptoChat" className="w-12 h-12 object-contain" />
           </motion.div>
-          <h1 className="text-3xl font-bold text-gradient">CryptaChat</h1>
+          <h1 className="text-3xl font-bold text-gradient">CryptoChat</h1>
           <p className="text-muted-foreground mt-1 text-sm">Private rooms. Real conversations.</p>
         </div>
 

@@ -66,8 +66,8 @@ const Dashboard = () => {
     <div className="h-[100dvh] flex bg-background overflow-hidden">
       {/* Narrow icon sidebar */}
       <div className="w-16 bg-[#111B21] border-r border-[#222D34] flex flex-col items-center py-4 gap-2">
-        <div className="w-10 h-10 rounded-xl bg-[#25D366]/10 flex items-center justify-center mb-4">
-          <Shield className="w-5 h-5 text-[#25D366]" />
+        <div className="w-10 h-10 flex items-center justify-center mb-4">
+          <img src="/cryptochatlogo.png" alt="CryptoChat" className="w-8 h-8 object-contain" />
         </div>
         <NavIcon icon={<MessageSquare className="w-5 h-5" />} active onClick={() => setActiveRoomId(null)} />
         <NavIcon icon={<UserIcon className="w-5 h-5" />} onClick={() => navigate('/profile')} />
@@ -139,7 +139,7 @@ const Dashboard = () => {
             
             {/* Centered Logo Watermark */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[5]">
-               <img src="/cryptochat.png" alt="" className="w-1/2 max-w-lg grayscale brightness-200 opacity-[0.05]" />
+               <img src="/cryptochatlogo.png" alt="" className="w-1/2 max-w-lg grayscale brightness-200 opacity-[0.05]" />
             </div>
             
             {/* Chat header */}

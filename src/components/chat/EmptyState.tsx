@@ -16,11 +16,11 @@ export function EmptyState() {
           <div className="absolute -top-2 -right-2 w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
             <Lock className="w-4 h-4 text-primary/60" />
           </div>
-          <div className="absolute -bottom-2 -left-2 w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Shield className="w-4 h-4 text-primary/60" />
+          <div className="absolute -bottom-2 -left-2 w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden">
+            <img src="/cryptochatlogo.png" alt="" className="w-5 h-5 object-contain" />
           </div>
         </div>
-        <h3 className="text-lg font-semibold text-foreground mb-2">CryptaChat</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">CryptoChat</h3>
         <p className="text-sm text-muted-foreground leading-relaxed">
           Start chatting by joining a secure room. Your conversations are private and encrypted.
         </p>
