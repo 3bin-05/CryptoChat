@@ -26,7 +26,8 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const {
     user, rooms, activeRoomId, setActiveRoomId,
-    messages, sendMessage, createRoom, joinRoom, leaveRoom, typingUsers, logout,
+    messages, sendMessage, sendImageMessage, createRoom, joinRoom, leaveRoom, typingUsers, logout,
+    uploadToCloudinary
   } = useChat();
 
   const [search, setSearch] = useState('');
@@ -62,7 +63,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="h-screen flex bg-background overflow-hidden">
+    <div className="h-[100dvh] flex bg-background overflow-hidden">
       {/* Narrow icon sidebar */}
       <div className="w-16 bg-[#111B21] border-r border-[#222D34] flex flex-col items-center py-4 gap-2">
         <div className="w-10 h-10 rounded-xl bg-[#25D366]/10 flex items-center justify-center mb-4">
@@ -196,7 +197,13 @@ const Dashboard = () => {
             <div className="flex-1 relative z-10 flex flex-col">
               <ChatMessages messages={activeMessages} />
               <TypingIndicator users={activeTyping} />
-              <ChatInput onSend={text => sendMessage(activeRoom.roomId, text)} />
+              <ChatInput 
+                onSend={text => sendMessage(activeRoom.roomId, text)}
+                onSendImage={async (file, caption) => {
+                  const imageUrl = await uploadToCloudinary(file, 'chat-images');
+                  await sendImageMessage(activeRoom.roomId, imageUrl, caption);
+                }}
+              />
             </div>
           </>
         ) : (

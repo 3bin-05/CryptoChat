@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { Send, Smile, Paperclip, Mic } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Send, Smile, Mic, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import EmojiPicker, { Theme, EmojiClickData } from 'emoji-picker-react';
 import {
@@ -7,24 +7,45 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ImageUploadButton } from './ImageUploadButton';
+import { ImagePreview } from './ImagePreview';
+import { toast } from 'sonner';
 
 interface ChatInputProps {
   onSend: (text: string) => void;
+  onSendImage?: (file: File, caption: string) => Promise<void>;
 }
 
-export function ChatInput({ onSend }: ChatInputProps) {
+export function ChatInput({ onSend, onSendImage }: ChatInputProps) {
   const [text, setText] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [caption, setCaption] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  const handleSend = () => {
-    if (!text.trim()) return;
-    onSend(text.trim());
-    setText('');
+  const handleSend = async () => {
+    if (selectedImage) {
+      if (!onSendImage) return;
+      setIsUploading(true);
+      try {
+        await onSendImage(selectedImage, caption);
+        setSelectedImage(null);
+        setCaption('');
+      } catch (error: any) {
+        toast.error(error.message || 'Failed to send image');
+      } finally {
+        setIsUploading(false);
+      }
+    } else if (text.trim()) {
+      onSend(text.trim());
+      setText('');
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -39,8 +60,66 @@ export function ChatInput({ onSend }: ChatInputProps) {
     inputRef.current?.focus();
   };
 
+  const handleFileSelect = (file: File) => {
+    // Validate
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Only JPEG, PNG and WEBP images are allowed');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size must be less than 5MB');
+      return;
+    }
+    setSelectedImage(file);
+  };
+
+  const onDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const onDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      handleFileSelect(file);
+    }
+  }, []);
+
   return (
-    <div className="px-3 py-2.5 bg-[#202C33] flex items-center gap-2 relative z-20">
+    <div 
+      className={`min-h-[62px] px-3 py-2 bg-[#202C33] flex items-center gap-2 relative z-20 transition-colors ${
+        isDragging ? 'bg-[#2A3942]' : ''
+      }`}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+    >
+      <AnimatePresence>
+        {selectedImage && (
+          <ImagePreview
+            imageFile={selectedImage}
+            caption={caption}
+            onCaptionChange={setCaption}
+            onRemove={() => setSelectedImage(null)}
+            isSending={isUploading}
+          />
+        )}
+      </AnimatePresence>
+
+      {isDragging && (
+        <div className="absolute inset-0 bg-[#00a884]/10 border-2 border-dashed border-[#00a884] flex items-center justify-center pointer-events-none z-30">
+          <p className="text-[#00a884] font-medium">Drop image here</p>
+        </div>
+      )}
+
       <div className="flex items-center">
         <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
           <PopoverTrigger asChild>
@@ -78,34 +157,41 @@ export function ChatInput({ onSend }: ChatInputProps) {
           </PopoverContent>
         </Popover>
         
-        <button className="p-2 text-[#8696a0] hover:text-[#D1D7DB] transition-colors focus:outline-none">
-          <Paperclip className="w-[26px] h-[26px] rotate-45" />
-        </button>
+        <ImageUploadButton onFileSelect={handleFileSelect} disabled={isUploading} />
       </div>
 
       <div className="flex-1">
         <input
           ref={inputRef}
           value={text}
-          onChange={e => setText(e.target.value)}
+          onChange={e => {
+            setText(e.target.value);
+            if (selectedImage) setCaption(e.target.value);
+          }}
           onKeyDown={handleKeyDown}
-          placeholder="Type a message"
-          className="w-full bg-[#2A3942] rounded-lg px-4 py-2.5 text-[15px] text-[#D1D7DB] placeholder:text-[#8696a0] focus:outline-none transition-all"
+          placeholder={selectedImage ? "Add a caption..." : "Type a message"}
+          disabled={isUploading}
+          className="w-full bg-[#2A3942] rounded-lg px-4 py-2.5 text-[15px] text-[#D1D7DB] placeholder:text-[#8696a0] focus:outline-none transition-all disabled:opacity-50"
         />
       </div>
 
       <div className="w-12 flex justify-center">
         <AnimatePresence mode="wait">
-          {text.trim() ? (
+          {(text.trim() || selectedImage) ? (
             <motion.button
               key="send"
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.5, opacity: 0 }}
               onClick={handleSend}
-              className="text-[#8696a0] hover:text-[#D1D7DB] focus:outline-none"
+              disabled={isUploading}
+              className="text-[#8696a0] hover:text-[#D1D7DB] focus:outline-none disabled:opacity-50"
             >
-              <Send className="w-[26px] h-[26px]" />
+              {isUploading ? (
+                <Loader2 className="w-[26px] h-[26px] animate-spin" />
+              ) : (
+                <Send className="w-[26px] h-[26px]" />
+              )}
             </motion.button>
           ) : (
             <motion.button

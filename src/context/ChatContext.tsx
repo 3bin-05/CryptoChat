@@ -26,6 +26,7 @@ interface ChatContextType {
   setActiveRoomId: (id: string | null) => void;
   messages: Record<string, Message[]>;
   sendMessage: (roomId: string, text: string) => void;
+  sendImageMessage: (roomId: string, imageUrl: string, caption?: string) => Promise<void>;
   createRoom: (name: string, password: string) => Promise<void>;
   joinRoom: (name: string, password: string) => Promise<boolean>;
   updateUserProfile: (name: string, file?: File) => Promise<void>;
@@ -33,6 +34,7 @@ interface ChatContextType {
   updateRoom: (roomId: string, updates: any) => Promise<void>;
   deleteRoom: (roomId: string) => Promise<void>;
   uploadRoomImage: (roomId: string, file: File) => Promise<void>;
+  uploadToCloudinary: (file: File, folder?: string) => Promise<string>;
   allUsers: User[];
   typingUsers: Record<string, string[]>;
 }
@@ -137,6 +139,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
           text: data.text,
           timestamp: data.timestamp?.toDate() || new Date(),
           status: data.status || 'delivered',
+          type: data.type || 'text',
+          imageUrl: data.imageUrl,
         });
       });
       setMessages((prev) => ({
@@ -187,19 +191,36 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const sendMessage = async (roomId: string, text: string) => {
     if (!firebaseUser) return;
     
-    // Optimistic offline update not strictly required for MVP but standard pattern.
-    // addDoc will write to local cache instantly and trigger onSnapshot locally.
     await addDoc(collection(db, `rooms/${roomId}/messages`), {
       senderId: user.uid,
       senderName: user.name,
       text,
       timestamp: serverTimestamp(),
       status: 'delivered', 
+      type: 'text'
     });
 
-    // Update the room's latest message activity explicitly
     await updateDoc(doc(db, 'rooms', roomId), {
       lastMessage: text,
+      lastMessageTime: serverTimestamp()
+    });
+  };
+
+  const sendImageMessage = async (roomId: string, imageUrl: string, caption?: string) => {
+    if (!firebaseUser) return;
+    
+    await addDoc(collection(db, `rooms/${roomId}/messages`), {
+      senderId: user.uid,
+      senderName: user.name,
+      text: caption || '',
+      imageUrl,
+      timestamp: serverTimestamp(),
+      status: 'delivered',
+      type: 'image'
+    });
+
+    await updateDoc(doc(db, 'rooms', roomId), {
+      lastMessage: '📷 Image',
       lastMessageTime: serverTimestamp()
     });
   };
@@ -248,10 +269,13 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     return joined;
   };
 
-  const uploadToCloudinary = async (file: File): Promise<string> => {
+  const uploadToCloudinary = async (file: File, folder?: string): Promise<string> => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    if (folder) {
+      formData.append('folder', folder);
+    }
 
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
@@ -356,8 +380,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         user, firebaseUser, isAuthenticated, authLoading,
         login, signup, loginWithGoogle, logout,
         rooms, activeRoomId, setActiveRoomId,
-        messages, sendMessage, createRoom, joinRoom, updateUserProfile, leaveRoom,
-        updateRoom, deleteRoom, uploadRoomImage,
+        messages, sendMessage, sendImageMessage, createRoom, joinRoom, updateUserProfile, leaveRoom,
+        updateRoom, deleteRoom, uploadRoomImage, uploadToCloudinary,
         allUsers, typingUsers,
       }}
     >

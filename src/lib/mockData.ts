@@ -30,6 +30,8 @@ export interface Message {
   text: string;
   timestamp: Date;
   status: MessageStatus;
+  type?: 'text' | 'image';
+  imageUrl?: string;
 }
 
 export const currentUser: User = {
