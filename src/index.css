@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,62 +6,35 @@
 
 @layer base {
   :root {
-    --background: 200 40% 7%; /* #0B141A */
-    --foreground: 210 40% 95%;
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
 
-    --card: 200 31% 10%; /* #111B21 */
-    --card-foreground: 210 40% 95%;
+    --card: 240 10% 4.5%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 200 31% 10%;
-    --popover-foreground: 210 40% 95%;
+    --popover: 240 10% 5%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 142 54% 49%; /* #25D366 WhatsApp Green */
-    --primary-foreground: 222 47% 6%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 200 23% 16%; /* #202C33 Received bubble */
-    --secondary-foreground: 210 40% 85%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 200 23% 16%;
-    --muted-foreground: 215 15% 50%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
 
-    --accent: 142 54% 49%;
-    --accent-foreground: 222 47% 6%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 72% 50%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 200 20% 15%;
-    --input: 200 20% 15%;
-    --ring: 142 54% 49%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 217.2 91.2% 59.8%;
 
     --radius: 0.75rem;
-
-    --sidebar-background: 200 40% 8%;
-    --sidebar-foreground: 210 40% 85%;
-    --sidebar-primary: 142 54% 49%;
-    --sidebar-primary-foreground: 222 47% 6%;
-    --sidebar-accent: 200 31% 12%;
-    --sidebar-accent-foreground: 210 40% 85%;
-    --sidebar-border: 200 20% 14%;
-    --sidebar-ring: 142 54% 49%;
-
-    /* Custom chat tokens */
-    --chat-sent: 165 100% 15%; /* #005C4B Sent bubble */
-    --chat-sent-foreground: 210 40% 98%;
-    --chat-received: 200 23% 16%; /* #202C33 Received bubble */
-    --chat-received-foreground: 210 40% 95%;
-    --chat-read-blue: 199 89% 58%; /* #34B7F1 */
-  }
-}
-
-@layer utilities {
-  .chat-bg-pattern {
-    background-image: url('/whatsapp_doodle_bg.png');
-    background-repeat: repeat;
-    background-size: 350px 350px;
-    opacity: 0.15;
-    filter: contrast(1.4) brightness(0.8);
-    mix-blend-mode: overlay;
   }
 }
 
@@ -70,6 +43,8 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
 }
 
 @layer base {
@@ -79,22 +54,17 @@ html, body {
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
 }
 
 @layer utilities {
-  .glass-panel {
-    @apply bg-card/60 backdrop-blur-xl border border-border/50;
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
-
-  .glow-border {
-    box-shadow: 0 0 20px hsl(var(--glow-primary)),
-                inset 0 0 20px hsl(var(--glow-primary));
-  }
-
-  .text-gradient {
-    @apply bg-gradient-to-r from-primary to-emerald-400 bg-clip-text text-transparent;
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   .scrollbar-thin {
@@ -103,7 +73,8 @@ html, body {
   }
 
   .scrollbar-thin::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
+    height: 6px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-track {
@@ -112,6 +83,10 @@ html, body {
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background-color: hsl(var(--border));
-    border-radius: 999px;
+    border-radius: 9999px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground));
   }
 }

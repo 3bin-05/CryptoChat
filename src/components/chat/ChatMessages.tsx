@@ -34,7 +34,7 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
 
       return (
         <div className="w-full flex justify-center my-6 sticky top-0 z-20 pointer-events-none">
-          <span className="px-3 py-1.5 rounded-lg bg-[#182229] text-[12.5px] font-medium text-[#8696a0] uppercase shadow-sm">
+          <span className="px-3 py-1 rounded-full bg-secondary/80 backdrop-blur-md border border-border text-[11px] font-medium text-muted-foreground uppercase shadow-sm">
             {label}
           </span>
         </div>
@@ -65,23 +65,23 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
                 />
               ) : (
                 <motion.div
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.1 }}
-                  className={`relative max-w-[70%] min-w-[80px] px-4 py-2 rounded-2xl shadow-sm transition-all duration-200 hover:brightness-110 cursor-default ${
+                  initial={{ opacity: 0, y: 5, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.2, type: 'spring', stiffness: 300, damping: 25 }}
+                  className={`relative max-w-[75%] min-w-[80px] px-4 py-2 rounded-2xl shadow-sm transition-all duration-200 ${
                     isSent
-                      ? 'bg-[#005C4B] text-white rounded-br-md'
-                      : 'bg-[#202C33] text-[#E9EDEF] rounded-bl-md'
+                      ? 'bg-primary text-primary-foreground rounded-br-sm'
+                      : 'bg-secondary text-foreground rounded-bl-sm border border-border'
                   } ${isFirstInGroup ? 'mt-3' : 'mt-1'}`}
                 >
                   {!isSent && isFirstInGroup && (
-                    <p className="text-[12.5px] font-semibold text-[#34B7F1] mb-1 opacity-95">{msg.senderName}</p>
+                    <p className="text-[13px] font-medium text-primary mb-1">{msg.senderName}</p>
                   )}
                   
                   <div className="flex flex-wrap items-end gap-x-3">
                     <p className="text-[14.5px] leading-relaxed flex-1 break-words">{msg.text}</p>
                     <div className="flex items-center gap-1.5 ml-auto mt-1 -mb-0.5">
-                      <span className="text-[11px] text-white/60 font-normal uppercase">{formatTime(msg.timestamp)}</span>
+                      <span className={`text-[11px] uppercase ${isSent ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{formatTime(msg.timestamp)}</span>
                       {isSent && <MessageStatus status={msg.status} />}
                     </div>
                   </div>

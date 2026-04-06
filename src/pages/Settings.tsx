@@ -1,30 +1,29 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Moon, Bell, LogOut, Shield } from 'lucide-react';
+import { Moon, Bell, LogOut, Shield } from 'lucide-react';
 import { useChat } from '@/context/ChatContext';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { Switch } from '@/components/ui/switch';
 
 const Settings = () => {
-  const navigate = useNavigate();
   const { logout } = useChat();
   const [darkMode, setDarkMode] = useState(true);
   const [notifications, setNotifications] = useState(true);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-lg mx-auto px-4 py-8">
-        <button
-          onClick={() => navigate('/')}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
+    <AppLayout>
+      <div className="flex-1 flex flex-col items-center justify-center p-6 bg-background">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          className="w-full max-w-md bg-card border border-border rounded-2xl p-8 shadow-sm"
         >
-          <ArrowLeft className="w-4 h-4" /> Back to chats
-        </button>
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Preferences</h1>
+            <p className="text-sm text-muted-foreground mt-1">Customize your application experience.</p>
+          </div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-panel rounded-2xl p-8">
-          <h1 className="text-xl font-bold text-foreground mb-6">Settings</h1>
-
-          <div className="space-y-1">
+          <div className="space-y-2">
             <SettingRow
               icon={<Moon className="w-5 h-5" />}
               label="Dark Mode"
@@ -41,21 +40,21 @@ const Settings = () => {
               icon={<Shield className="w-5 h-5" />}
               label="Privacy"
               description="Coming soon"
-              action={<span className="text-xs text-muted-foreground bg-secondary px-2 py-1 rounded-md">Soon</span>}
+              action={<span className="text-[11px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-md">Soon</span>}
             />
           </div>
 
-          <div className="mt-8 pt-6 border-t border-border/50">
+          <div className="mt-8 pt-6 border-t border-border">
             <button
-              onClick={() => { logout(); navigate('/'); }}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-destructive hover:bg-destructive/10 transition-colors font-medium"
+              onClick={logout}
+              className="w-full h-11 flex items-center justify-center gap-2 rounded-xl text-destructive hover:bg-destructive/10 transition-colors font-medium text-base"
             >
-              <LogOut className="w-4 h-4" /> Log Out
+              <LogOut className="w-4 h-4" /> Sign Out
             </button>
           </div>
         </motion.div>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 
@@ -65,12 +64,12 @@ function SettingRow({
   icon: React.ReactNode; label: string; description: string; action: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between py-4 px-2">
-      <div className="flex items-center gap-3">
-        <div className="text-muted-foreground">{icon}</div>
+    <div className="flex items-center justify-between py-4 px-4 rounded-xl hover:bg-secondary transition-colors group">
+      <div className="flex items-center gap-4">
+        <div className="text-muted-foreground group-hover:text-primary transition-colors">{icon}</div>
         <div>
           <p className="text-sm font-medium text-foreground">{label}</p>
-          <p className="text-xs text-muted-foreground">{description}</p>
+          <p className="text-[13px] text-muted-foreground">{description}</p>
         </div>
       </div>
       {action}

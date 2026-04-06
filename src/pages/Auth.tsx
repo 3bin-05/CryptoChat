@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Mail, User, ArrowRight, Shield } from 'lucide-react';
+import { Lock, Mail, User, Shield, MessageSquare, Loader2 } from 'lucide-react';
 import { useChat } from '@/context/ChatContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -51,33 +51,81 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
-      <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl" />
+    <div className="min-h-screen bg-background flex flex-col md:flex-row font-sans text-foreground">
+      {/* Left panel - Branding (Hidden on mobile) */}
+      <div className="hidden md:flex md:w-1/2 bg-zinc-950 border-r border-border p-12 flex-col justify-between relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md mx-4"
-      >
-        <div className="text-center mb-8">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', delay: 0.2 }}
-            className="inline-flex items-center justify-center w-16 h-16 mb-4"
-          >
-            <img src="/cryptochatlogo.png" alt="CryptoChat" className="w-12 h-12 object-contain" />
-          </motion.div>
-          <h1 className="text-3xl font-bold text-gradient">CryptoChat</h1>
-          <p className="text-muted-foreground mt-1 text-sm">Private rooms. Real conversations.</p>
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+            <MessageSquare className="w-5 h-5 text-primary" />
+          </div>
+          <span className="text-xl font-bold tracking-tight">CryptoChat</span>
         </div>
 
-        <div className="glass-panel rounded-2xl p-8">
-          <h2 className="text-xl font-semibold text-foreground mb-6">
-            {isLogin ? 'Welcome back' : 'Create account'}
-          </h2>
+        <div className="relative z-10 space-y-6 max-w-md">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white leading-[1.1]">
+            Secure workspace for<br />
+            <span className="text-primary">real-time collaboration.</span>
+          </h1>
+          <p className="text-zinc-400 text-lg">
+            End-to-end encrypted messaging designed for modern teams.
+          </p>
+        </div>
+
+        <div className="relative z-10 flex items-center gap-2 text-sm text-zinc-500 font-medium">
+          <Shield className="w-4 h-4" />
+          Bank-grade encryption standard
+        </div>
+      </div>
+
+      {/* Right panel - Auth Form */}
+      <div className="flex-1 flex items-center justify-center p-6 md:p-12 relative">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="w-full max-w-[400px] space-y-8"
+        >
+          <div className="text-center md:text-left md:hidden mb-8">
+            <div className="inline-flex w-12 h-12 rounded-xl bg-primary/10 items-center justify-center border border-primary/20 mb-4">
+              <MessageSquare className="w-6 h-6 text-primary" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight">CryptoChat</h1>
+          </div>
+
+          <div className="space-y-2 text-center md:text-left">
+            <h2 className="text-3xl font-semibold tracking-tight text-white">
+              {isLogin ? 'Welcome back' : 'Create an account'}
+            </h2>
+            <p className="text-sm text-zinc-400">
+              {isLogin ? 'Enter your details to sign in to your account' : 'Enter your details below to create your account'}
+            </p>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGoogle}
+            disabled={loading}
+            className="w-full h-11 bg-card hover:bg-secondary border-border text-foreground transition-colors"
+          >
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <GoogleIcon />}
+            <span className="ml-2 font-medium">Continue with Google</span>
+          </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground w-max font-medium">
+                Or continue with email
+              </span>
+            </div>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <AnimatePresence mode="wait">
@@ -87,87 +135,76 @@ const Auth = () => {
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.2 }}
+                  className="space-y-2"
                 >
-                  <div className="relative mb-4">
+                  <label className="text-sm font-medium text-zinc-300">Full Name</label>
+                  <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
-                      placeholder="Full name"
+                      placeholder="John Doe"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="pl-10 bg-secondary border-border/50 focus:border-primary/50 h-12"
+                      className="pl-10 h-11 bg-card border-border focus:border-primary focus:ring-1 focus:ring-primary text-foreground placeholder:text-muted-foreground"
                     />
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                type="email"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 bg-secondary border-border/50 focus:border-primary/50 h-12"
-                required
-              />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-300">Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  type="email"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-10 h-11 bg-card border-border focus:border-primary focus:ring-1 focus:ring-primary text-foreground placeholder:text-muted-foreground"
+                  required
+                />
+              </div>
             </div>
 
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 bg-secondary border-border/50 focus:border-primary/50 h-12"
-                required
-              />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-300">Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-10 h-11 bg-card border-border focus:border-primary focus:ring-1 focus:ring-primary text-foreground placeholder:text-muted-foreground"
+                  required
+                />
+              </div>
             </div>
 
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 text-base font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
+              className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
             >
-              {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
-              {!loading && <ArrowRight className="w-4 h-4 ml-2" />}
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                isLogin ? 'Sign In' : 'Sign Up'
+              )}
             </Button>
           </form>
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border/50" />
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="bg-card px-3 text-muted-foreground">or continue with</span>
-            </div>
-          </div>
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleGoogle}
-            disabled={loading}
-            className="w-full h-12 text-base font-medium border-border/50 hover:bg-secondary transition-all gap-3"
-          >
-            <GoogleIcon />
-            Google
-          </Button>
-
-          <div className="mt-6 text-center">
+          <p className="text-center text-sm text-zinc-400">
+            {isLogin ? "Don't have an account? " : 'Already have an account? '}
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              className="font-medium text-primary hover:text-primary/80 transition-colors"
             >
-              {isLogin ? "Don't have an account? " : 'Already have an account? '}
-              <span className="text-primary font-medium">
-                {isLogin ? 'Sign Up' : 'Sign In'}
-              </span>
+              {isLogin ? 'Sign up' : 'Sign in'}
             </button>
-          </div>
-        </div>
-      </motion.div>
+          </p>
+        </motion.div>
+      </div>
     </div>
   );
 };

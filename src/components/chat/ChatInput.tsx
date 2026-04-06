@@ -95,8 +95,8 @@ export function ChatInput({ onSend, onSendImage }: ChatInputProps) {
 
   return (
     <div 
-      className={`min-h-[62px] px-3 py-2 bg-[#202C33] flex items-center gap-2 relative z-20 transition-colors ${
-        isDragging ? 'bg-[#2A3942]' : ''
+      className={`min-h-[62px] px-2 py-0 border-t border-border flex items-center gap-2 relative z-20 transition-colors bg-card ${
+        isDragging ? 'bg-secondary' : ''
       }`}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
@@ -115,16 +115,16 @@ export function ChatInput({ onSend, onSendImage }: ChatInputProps) {
       </AnimatePresence>
 
       {isDragging && (
-        <div className="absolute inset-0 bg-[#00a884]/10 border-2 border-dashed border-[#00a884] flex items-center justify-center pointer-events-none z-30">
-          <p className="text-[#00a884] font-medium">Drop image here</p>
+        <div className="absolute inset-0 bg-primary/10 border-2 border-dashed border-primary flex items-center justify-center pointer-events-none z-30">
+          <p className="text-primary font-bold">Drop image here</p>
         </div>
       )}
 
       <div className="flex items-center">
         <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
           <PopoverTrigger asChild>
-            <button className="p-2 text-[#8696a0] hover:text-[#D1D7DB] transition-colors focus:outline-none">
-              <Smile className="w-[26px] h-[26px]" />
+            <button className="w-10 h-10 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-all focus:outline-none mb-2 mt-2">
+              <Smile className="w-5 h-5" />
             </button>
           </PopoverTrigger>
           <PopoverContent 
@@ -132,7 +132,7 @@ export function ChatInput({ onSend, onSendImage }: ChatInputProps) {
             align="start" 
             className="p-0 border-none bg-transparent shadow-none w-auto mb-2"
           >
-            <div className="shadow-2xl rounded-xl overflow-hidden border border-[#222D34]">
+            <div className="shadow-lg rounded-xl overflow-hidden bg-card border border-border">
               <EmojiPicker
                 onEmojiClick={onEmojiClick}
                 theme={Theme.DARK}
@@ -142,15 +142,15 @@ export function ChatInput({ onSend, onSendImage }: ChatInputProps) {
                 width={350}
                 height={450}
                 style={{
-                  '--epr-bg-color': '#111B21',
-                  '--epr-category-label-bg-color': '#111B21',
-                  '--epr-picker-border-color': '#222D34',
-                  '--epr-search-input-bg-color': '#202C33',
-                  '--epr-search-input-border-color': 'transparent',
-                  '--epr-hover-bg-color': '#202C33',
-                  '--epr-focus-bg-color': '#202C33',
-                  '--epr-highlight-color': '#00a884',
-                  '--epr-search-input-bg-color-active': '#202C33',
+                  '--epr-bg-color': 'hsl(var(--card))',
+                  '--epr-category-label-bg-color': 'hsl(var(--card))',
+                  '--epr-picker-border-color': 'transparent',
+                  '--epr-search-input-bg-color': 'hsl(var(--secondary))',
+                  '--epr-search-input-border-color': 'hsl(var(--border))',
+                  '--epr-hover-bg-color': 'hsl(var(--secondary))',
+                  '--epr-focus-bg-color': 'hsl(var(--secondary))',
+                  '--epr-highlight-color': 'hsl(var(--primary))',
+                  '--epr-search-input-bg-color-active': 'hsl(var(--secondary))',
                 } as React.CSSProperties}
               />
             </div>
@@ -160,7 +160,7 @@ export function ChatInput({ onSend, onSendImage }: ChatInputProps) {
         <ImageUploadButton onFileSelect={handleFileSelect} disabled={isUploading} />
       </div>
 
-      <div className="flex-1">
+      <div className="flex-1 py-2">
         <input
           ref={inputRef}
           value={text}
@@ -169,13 +169,13 @@ export function ChatInput({ onSend, onSendImage }: ChatInputProps) {
             if (selectedImage) setCaption(e.target.value);
           }}
           onKeyDown={handleKeyDown}
-          placeholder={selectedImage ? "Add a caption..." : "Type a message"}
+          placeholder={selectedImage ? "Add a caption..." : "Message"}
           disabled={isUploading}
-          className="w-full bg-[#2A3942] rounded-lg px-4 py-2.5 text-[15px] text-[#D1D7DB] placeholder:text-[#8696a0] focus:outline-none transition-all disabled:opacity-50"
+          className="w-full bg-secondary border border-transparent rounded-xl px-4 py-3 text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all disabled:opacity-50"
         />
       </div>
 
-      <div className="w-12 flex justify-center">
+      <div className="w-12 flex justify-center py-2">
         <AnimatePresence mode="wait">
           {(text.trim() || selectedImage) ? (
             <motion.button
@@ -185,12 +185,12 @@ export function ChatInput({ onSend, onSendImage }: ChatInputProps) {
               exit={{ scale: 0.5, opacity: 0 }}
               onClick={handleSend}
               disabled={isUploading}
-              className="text-[#8696a0] hover:text-[#D1D7DB] focus:outline-none disabled:opacity-50"
+              className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none disabled:opacity-50 transition-all"
             >
               {isUploading ? (
-                <Loader2 className="w-[26px] h-[26px] animate-spin" />
+                <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                <Send className="w-[26px] h-[26px]" />
+                <Send className="w-4 h-4 ml-1" />
               )}
             </motion.button>
           ) : (
@@ -199,9 +199,9 @@ export function ChatInput({ onSend, onSendImage }: ChatInputProps) {
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.5, opacity: 0 }}
-              className="text-[#8696a0] hover:text-[#D1D7DB] focus:outline-none"
+              className="w-10 h-10 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground focus:outline-none transition-all"
             >
-              <Mic className="w-[26px] h-[26px]" />
+              <Mic className="w-5 h-5" />
             </motion.button>
           )}
         </AnimatePresence>
